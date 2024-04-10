@@ -32,14 +32,13 @@ class _DisposableLenientFormatter(Formatter):
         self.indexer = itertools.count()
         self._stale = False
         self.used_args = set()
-        self.recursion_depth = 2
 
     def vformat(
         self, format_string: str, args: Sequence[Any], kwargs: Mapping[str, Any]
     ) -> str:
         assert not self._stale, f"{type(self).__name__} must not be reused"
         self._stale = True
-        result, _ = self._vformat_lenient(format_string, args, kwargs)
+        result, _ = self._vformat_lenient(format_string, args, kwargs, 2)
         self.check_unused_args(self.used_args, args, kwargs)
         return result
 
@@ -47,50 +46,50 @@ class _DisposableLenientFormatter(Formatter):
         self, key: str | int, args: Sequence[Any], kwargs: Mapping[str, Any]
     ) -> Any:
         try:
-            return super().get_value(key or next(self.indexer), args, kwargs)
+            return super().get_value(
+                key if key != "" else next(self.indexer), args, kwargs
+            )
         except (IndexError, KeyError):
             return _MISSING
 
     def _vformat_lenient(
-        self, format_string: str, args: Sequence[Any], kwargs: Mapping[str, Any]
+        self,
+        format_string: str,
+        args: Sequence[Any],
+        kwargs: Mapping[str, Any],
+        depth: int,
     ) -> tuple[str, bool]:
-        self._check_recursion()
+        if depth < 0:
+            raise ValueError("Max string recursion exceeded")
         result: list[tuple[str, bool]] = []
-        for literal_text, field_name, format_spec, conversion in self.parse(
-            format_string
-        ):
-            if literal_text:
-                result.append((literal_text, True))
+        for literal_text, field_name, spec, conversion in self.parse(format_string):
+            result.append((literal_text, True))
             if field_name is None:
                 continue
-            assert format_spec is not None
+            assert spec is not None
             result.append(
-                self._replace_field(field_name, conversion, format_spec, args, kwargs)
+                self._replace_field(field_name, conversion, spec, args, kwargs, depth)
             )
         return "".join(part for part, _ in result), all(known for _, known in result)
-
-    def _check_recursion(self) -> None:
-        if self.recursion_depth < 0:
-            raise ValueError("Max string recursion exceeded")
-        self.recursion_depth -= 1
 
     def _replace_field(
         self,
         field_name: str,
         conversion: str | None,
-        format_spec: str,
+        spec: str,
         args: Sequence[Any],
         kwargs: Mapping[str, Any],
+        depth: int,
     ) -> tuple[str, bool]:
         obj, arg_used = self.get_field(field_name, args, kwargs)
         if obj is _MISSING:
-            return str(_Unmatched(field_name, conversion, format_spec)), False
+            return str(_Unmatched(field_name, conversion, spec)), False
         obj = self.convert_field(obj, conversion)
-        new_format_spec, known = self._vformat_lenient(format_spec, args, kwargs)
+        new_spec, known = self._vformat_lenient(spec, args, kwargs, depth - 1)
         if not known:
-            return str(_Unmatched(field_name, conversion, format_spec)), False
+            return str(_Unmatched(field_name, conversion, spec)), False
         self.used_args.add(arg_used)
-        return self.format_field(obj, new_format_spec), True
+        return self.format_field(obj, new_spec), True
 
 
 class _Missing:

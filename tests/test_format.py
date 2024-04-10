@@ -10,13 +10,14 @@ from lenient_string_formatter import LenientFormatter
 class FormatTestCase:
     name: str
     template: str
-    expected: str = ""
+    expected: str | None = None
     args: tuple[Any, ...] = ()
     kwargs: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         if not self.args and not self.kwargs and not self.expected:
             self.expected = self.template
+        assert self.expected is not None
 
 
 class HasAttr:
@@ -99,6 +100,24 @@ FORMAT_TEST_CASES = (
         name="recursive-mixed-2", template="{1:{0}}", expected="{1:{0}}", args=("a",)
     ),
     FormatTestCase(name="convert-format-spec", template="{!r:2} {!s:03} {!a:4}"),
+    FormatTestCase(
+        name="named-repeats",
+        template="{n}+{n}=2*{n}",
+        expected="3+3=2*3",
+        kwargs={"n": "3"},
+    ),
+    FormatTestCase(
+        name="numbered-repeats",
+        template="{0}+{0}=2*{0}",
+        expected="3+3=2*3",
+        args=("3",),
+    ),
+    FormatTestCase(
+        name="auto-repeats",
+        template="{}+{}=2*{}",
+        expected="3+3=2*3",
+        args=("3", "3", "3"),
+    ),
 )
 
 
