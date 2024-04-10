@@ -10,45 +10,95 @@ from lenient_string_formatter import LenientFormatter
 class FormatTestCase:
     name: str
     template: str
-    expected: str
+    expected: str = ""
     args: tuple[Any, ...] = ()
     kwargs: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        if not self.args and not self.kwargs and not self.expected:
+            self.expected = self.template
+
+
+class HasAttr:
+    def __init__(self, value: Any):
+        self.attr = value
 
 
 FORMAT_TEST_CASES = (
     FormatTestCase(name="no-fields", template="No fields", expected="No fields"),
     FormatTestCase(
-        name="kwargs-simple", template="{foo}", expected="bar", kwargs={"foo": "bar"}
+        name="named-simple", template="{foo}", expected="bar", kwargs={"foo": "bar"}
     ),
     FormatTestCase(
-        name="kwargs-unmatched",
+        name="named-unmatched",
         template="{unknown}",
         expected="{unknown}",
         kwargs={"foo": "bar"},
     ),
     FormatTestCase(
-        name="kwargs-mixed",
+        name="named-mixed",
         template="{name} {age}",
         expected="Alice {age}",
         kwargs={"name": "Alice"},
     ),
     FormatTestCase(
-        name="kwargs-format-spec",
-        template="{name:10} {age:03}",
-        expected="Alice     {age:03}",
-        kwargs={"name": "Alice"},
+        name="named-format-spec",
+        template="{a:2}{x:03}",
+        expected="a {x:03}",
+        kwargs={"a": "a"},
     ),
-    FormatTestCase(name="args-simple", template="{0}", expected="bar", args=("bar",)),
-    FormatTestCase(name="args-unmatched", template="{0}", expected="{0}"),
+    FormatTestCase(name="named-attr", template="{obj.attr}"),
+    FormatTestCase(name="named-item", template="{obj[key]}"),
+    FormatTestCase(name="named-convert", template="{a} {b!r} {c!s} {d!a}"),
     FormatTestCase(
-        name="args-mixed", template="{0} {1}", expected="Alice {1}", args=("Alice",)
+        name="numbered-simple", template="{0}", expected="bar", args=("bar",)
+    ),
+    FormatTestCase(name="numbered-unmatched", template="{0}"),
+    FormatTestCase(
+        name="numbered-mixed", template="{0} {1}", expected="Alice {1}", args=("Alice",)
     ),
     FormatTestCase(
-        name="args-format-spec",
-        template="{0:10} {1:03}",
-        expected="Alice     {1:03}",
-        args=("Alice",),
+        name="numbered-format-spec",
+        template="{1:2}{0:03}",
+        expected="{1:2}001",
+        args=(1,),
     ),
+    FormatTestCase(name="numbered-attr", template="{0.attr}"),
+    FormatTestCase(name="numbered-item", template="{0[key]}"),
+    FormatTestCase(name="numbered-convert", template="{0} {1!r} {2!s} {3!a}"),
+    FormatTestCase(name="auto-and-numbered", template="{} {1} {} {0}"),
+    FormatTestCase(name="auto-simple", template="{}", expected="bar", args=("bar",)),
+    FormatTestCase(name="auto-unmatched", template="{}"),
+    FormatTestCase(
+        name="auto-mixed", template="{} {}", expected="Alice {}", args=("Alice",)
+    ),
+    FormatTestCase(
+        name="auto-format-spec", template="{:2}{:03}", expected="a {:03}", args=("a",)
+    ),
+    FormatTestCase(
+        name="auto-attr",
+        template="{.attr}{.attr}",
+        expected="a{.attr}",
+        args=(HasAttr("a"),),
+    ),
+    FormatTestCase(
+        name="auto-item",
+        template="{[key]}{[0]}",
+        expected="a{[0]}",
+        args=(dict(key="a"),),
+    ),
+    FormatTestCase(name="auto-convert", template="{} {!r} {!s} {!a}"),
+    FormatTestCase(
+        name="recursive-simple", template="{:{}}", expected="a  ", args=("a", 3)
+    ),
+    FormatTestCase(name="recursive-unmatched", template="{:{}}"),
+    FormatTestCase(
+        name="recursive-mixed-1", template="{0:{1}}", expected="{0:{1}}", args=("a",)
+    ),
+    FormatTestCase(
+        name="recursive-mixed-2", template="{1:{0}}", expected="{1:{0}}", args=("a",)
+    ),
+    FormatTestCase(name="convert-format-spec", template="{!r:2} {!s:03} {!a:4}"),
 )
 
 
