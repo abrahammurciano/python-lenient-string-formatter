@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import itertools
+from dataclasses import dataclass
 from string import Formatter
 from typing import Any, Mapping, Self, Sequence
 
@@ -104,14 +105,11 @@ class _Missing:
 _MISSING = _Missing()
 
 
+@dataclass
 class _Unmatched:
-
-    def __init__(
-        self, name: str, conversion: str | None = None, spec: str = ""
-    ) -> None:
-        self.name = name
-        self.conversion = conversion
-        self.spec = spec
+    name: str
+    conversion: str | None
+    spec: str
 
     def __str__(self) -> str:
         result = f"{self.name}"
