@@ -98,10 +98,11 @@ assert formatted == template
 <dd>
 <div class="desc"><p>A lenient string formatter that leaves unmatched fields untouched in the output string instead of raising exceptions.</p>
 <p>The following exceptions that are normally raised by the built-in string formatter are caught and handled as follows:</p>
-<pre><code>- KeyError and IndexError will not be raised if a field in the template is not matched by the arguments. Instead, the field will be left untouched in the output string.
-- ValueError in case numbered and auto-numbered fields are mixed in the template (e.g. "{1} {}") will not be raised. Explicitly numbered fields will be matched according to their index (remaining untouched if the index is out of bounds), while auto-numbered fields will be matched according to their order in the arguments (again, remaining untouched if the index is out of bounds) independent of the explicit numbering.
-- KeyError is not raised on unnumbered field with key/attribute access. (&lt;https://bugs.python.org/issue27307&gt;)
-</code></pre></div>
+<ul>
+<li>KeyError and IndexError will not be raised if a field in the template is not matched by the arguments. Instead, the field will be left untouched in the output string.</li>
+<li>ValueError in case numbered and auto-numbered fields are mixed in the template (e.g. "{1} {}") will not be raised. Explicitly numbered fields will be matched according to their index (remaining untouched if the index is out of bounds), while auto-numbered fields will be matched according to their order in the arguments (again, remaining untouched if the index is out of bounds) independent of the explicit numbering.</li>
+<li>KeyError is not raised on unnumbered field with key/attribute access. (<a href="https://bugs.python.org/issue27307">https://bugs.python.org/issue27307</a>)</li>
+</ul></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>string.Formatter</li>
