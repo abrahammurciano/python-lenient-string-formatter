@@ -11,9 +11,9 @@ class LenientFormatter(Formatter):
 
     The following exceptions that are normally raised by the built-in string formatter are caught and handled as follows:
 
-        - KeyError and IndexError will not be raised if a field in the template is not matched by the arguments. Instead, the field will be left untouched in the output string.
-        - ValueError in case numbered and auto-numbered fields are mixed in the template (e.g. "{1} {}") will not be raised. Explicitly numbered fields will be matched according to their index (remaining untouched if the index is out of bounds), while auto-numbered fields will be matched according to their order in the arguments (again, remaining untouched if the index is out of bounds) independent of the explicit numbering.
-        - KeyError is not raised on unnumbered field with key/attribute access. (https://bugs.python.org/issue27307)
+    - KeyError and IndexError will not be raised if a field in the template is not matched by the arguments. Instead, the field will be left untouched in the output string.
+    - ValueError in case numbered and auto-numbered fields are mixed in the template (e.g. "{1} {}") will not be raised. Explicitly numbered fields will be matched according to their index (remaining untouched if the index is out of bounds), while auto-numbered fields will be matched according to their order in the arguments (again, remaining untouched if the index is out of bounds) independent of the explicit numbering.
+    - KeyError is not raised on unnumbered field with key/attribute access. (https://bugs.python.org/issue27307)
     """
 
     def vformat(
