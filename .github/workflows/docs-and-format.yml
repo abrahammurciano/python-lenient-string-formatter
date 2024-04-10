@@ -13,7 +13,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
+          python-version: "3.11"
       - name: Get Poetry
         run: pip install poetry
       - name: Install Dependencies
