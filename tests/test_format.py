@@ -3,7 +3,7 @@ from typing import Any
 
 import pytest
 
-from lenient_string_formatter import LenientFormatter
+from lenient_string_formatter import LenientFormatter, lformat
 
 
 @dataclass
@@ -133,6 +133,13 @@ def format_test_case(request: pytest.FixtureRequest) -> FormatTestCase:
 
 def test_format(formatter: LenientFormatter, format_test_case: FormatTestCase):
     actual = formatter.format(
+        format_test_case.template, *format_test_case.args, **format_test_case.kwargs
+    )
+    assert actual == format_test_case.expected
+
+
+def test_lformat(format_test_case: FormatTestCase):
+    actual = lformat(
         format_test_case.template, *format_test_case.args, **format_test_case.kwargs
     )
     assert actual == format_test_case.expected
