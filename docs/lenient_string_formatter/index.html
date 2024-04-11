@@ -39,25 +39,26 @@
 <p><a href="https://github.com/abrahammurciano/python-lenient-string-formatter.git"><img alt="Source Code - GitHub" src="https://img.shields.io/badge/Source_Code-GitHub-181717?style=for-the-badge&amp;logo=GitHub&amp;logoColor=%23FFFFFF"></a></p>
 <p><a href="https://pypi.org/project/lenient-string-formatter/"><img alt="PyPI - lenient-string-formatter" src="https://img.shields.io/badge/PyPI-lenient_string_formatter-006DAD?style=for-the-badge&amp;logo=PyPI&amp;logoColor=%23FFD242"></a></p>
 <h2 id="usage">Usage</h2>
-<p>This package provides the <code><a title="lenient_string_formatter.LenientFormatter" href="#lenient_string_formatter.LenientFormatter">LenientFormatter</a></code> class, a subclass of Python's built-in <code>string.Formatter</code>. You can use it in the same way as you would use the built-in formatter.</p>
+<p>This package provides a function called <code><a title="lenient_string_formatter.lformat" href="#lenient_string_formatter.lformat">lformat()</a></code> that you can use to format strings in a lenient way. You can use it in the same way as you would use Python's built-in <code>str.format</code> method.</p>
+<p>This package also provides the <code><a title="lenient_string_formatter.LenientFormatter" href="#lenient_string_formatter.LenientFormatter">LenientFormatter</a></code> class, a subclass of Python's built-in <code>string.Formatter</code>. It is used internally by the <code><a title="lenient_string_formatter.lformat" href="#lenient_string_formatter.lformat">lformat()</a></code> function, but it can be used directly or subclassed if you need more control over the formatting process.</p>
+<p>The examples below will use the <code><a title="lenient_string_formatter.lformat" href="#lenient_string_formatter.lformat">lformat()</a></code> function. <code><a title="lenient_string_formatter.LenientFormatter" href="#lenient_string_formatter.LenientFormatter">LenientFormatter</a>.format</code> can be used in the same way.</p>
 <h3 id="basic-example">Basic example</h3>
-<pre><code class="language-python">from lenient_string_formatter import LenientFormatter
+<pre><code class="language-python">from lenient_string_formatter import lformat
 
-formatter = LenientFormatter()
 template = &quot;{} {} {a} {b}&quot;
-formatted = formatter.format(template, 1, 2, a=3, b=4)
+formatted = lformat(template, 1, 2, a=3, b=4)
 assert formatted == &quot;1 2 3 4&quot;
 </code></pre>
 <h3 id="unmatched-fields">Unmatched fields</h3>
 <p>Unmatched fields are left untouched instead of raising exceptions.</p>
 <pre><code class="language-python">template = &quot;{} {} {a} {b}&quot;
-formatted = formatter.format(template, 1, a=3)
+formatted = lformat(template, 1, a=3)
 assert formatted == &quot;1 {} 3 {b}&quot;
 </code></pre>
 <h3 id="mixing-numbered-and-auto-numbered-fields">Mixing numbered and auto-numbered fields</h3>
 <p>Explicitly numbered fields are matched according to their index, while auto-numbered fields are matched according to their order in the arguments. They are matched independently of each other.</p>
 <pre><code class="language-python">template = &quot;{1} {}&quot;
-formatted = formatter.format(template, 1, 2)
+formatted = lformat(template, 1, 2)
 assert formatted == &quot;2 1&quot;
 </code></pre>
 <h3 id="unnumbered-field-with-keyattribute-access">Unnumbered field with key/attribute access</h3>
@@ -65,14 +66,14 @@ assert formatted == &quot;2 1&quot;
 <pre><code class="language-python">from types import SimpleNamespace
 
 template = &quot;{.attr} {[0]}&quot;
-formatted = formatter.format(template, SimpleNamespace(attr=1), [2])
+formatted = lformat(template, SimpleNamespace(attr=1), [2])
 assert formatted == &quot;1 2&quot;
 </code></pre>
 <h3 id="format-specifiers-and-conversion-flags-for-unmatched-fields">Format specifiers and conversion flags for unmatched fields</h3>
 <p>Unmatched fields are left untouched. This includes any format specifiers and conversion flags that are applied to the field. Furthermore, if the field is matched but the format specifier has a field which is unmatched, or vice versa, the field is still left untouched.</p>
 <p>For example, below <code>{a:3}</code> and <code>{b!r}</code> have no matching values, and neither <code>c=3</code> nor <code>f=4</code> provide enough values to completely fill the fields <code>{c:{d}}</code> and <code>{e:{f}}</code>, so all fields are left untouched.</p>
 <pre><code class="language-python">template = &quot;{a:3} {b!r} {c:{d}} {e:{f}}&quot;
-formatted = formatter.format(template, c=3, f=4)
+formatted = lformat(template, c=3, f=4)
 assert formatted == template
 </code></pre>
 </section>
