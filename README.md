@@ -25,16 +25,19 @@ $ pip install lenient-string-formatter
 
 ## Usage
 
-This package provides the `LenientFormatter` class, a subclass of Python's built-in `string.Formatter`. You can use it in the same way as you would use the built-in formatter.
+This package provides a function called `lformat` that you can use to format strings in a lenient way. You can use it in the same way as you would use Python's built-in `str.format` method.
+
+This package also provides the `LenientFormatter` class, a subclass of Python's built-in `string.Formatter`. It is used internally by the `lformat` function, but it can be used directly or subclassed if you need more control over the formatting process.
+
+The examples below will use the `lformat` function. `LenientFormatter().format` can be used in the same way.
 
 ### Basic example
 
 ```python
-from lenient_string_formatter import LenientFormatter
+from lenient_string_formatter import lformat
 
-formatter = LenientFormatter()
 template = "{} {} {a} {b}"
-formatted = formatter.format(template, 1, 2, a=3, b=4)
+formatted = lformat(template, 1, 2, a=3, b=4)
 assert formatted == "1 2 3 4"
 ```
 
@@ -44,7 +47,7 @@ Unmatched fields are left untouched instead of raising exceptions.
 
 ```python
 template = "{} {} {a} {b}"
-formatted = formatter.format(template, 1, a=3)
+formatted = lformat(template, 1, a=3)
 assert formatted == "1 {} 3 {b}"
 ```
 
@@ -54,7 +57,7 @@ Explicitly numbered fields are matched according to their index, while auto-numb
 
 ```python
 template = "{1} {}"
-formatted = formatter.format(template, 1, 2)
+formatted = lformat(template, 1, 2)
 assert formatted == "2 1"
 ```
 
@@ -66,7 +69,7 @@ The built-in formatter raises a KeyError when an unnumbered field is used with k
 from types import SimpleNamespace
 
 template = "{.attr} {[0]}"
-formatted = formatter.format(template, SimpleNamespace(attr=1), [2])
+formatted = lformat(template, SimpleNamespace(attr=1), [2])
 assert formatted == "1 2"
 ```
 
@@ -78,6 +81,6 @@ For example, below `{a:3}` and `{b!r}` have no matching values, and neither `c=3
 
 ```python
 template = "{a:3} {b!r} {c:{d}} {e:{f}}"
-formatted = formatter.format(template, c=3, f=4)
+formatted = lformat(template, c=3, f=4)
 assert formatted == template
 ```
