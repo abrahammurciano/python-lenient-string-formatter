@@ -11,7 +11,7 @@ documentation = "https://abrahammurciano.github.io/python-lenient-string-formatt
 keywords = []
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.11"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
