@@ -2,15 +2,12 @@
 .. include:: ../README.md
 """
 
-import importlib.metadata as metadata
 from string import Formatter
 from typing import Any, Mapping, Sequence
 
 from lenient_string_formatter._disposable_lenient_formatter import (
     DisposableLenientFormatter,
 )
-
-__version__ = metadata.version(__package__ or __name__)
 
 
 class LenientFormatter(Formatter):
@@ -45,4 +42,4 @@ def lformat(format_string: str, *args: Any, **kwargs: Any) -> str:
     return _formatter.format(format_string, *args, **kwargs)
 
 
-__all__ = ("LenientFormatter", "lformat", "__version__")
+__all__ = ("LenientFormatter", "lformat")
